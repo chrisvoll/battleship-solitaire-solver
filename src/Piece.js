@@ -80,20 +80,12 @@ class Piece {
   }
 
   setNeighbor(key, type) {
-    const coord = neighborMapper(key, this.x, this.y);
-    const neighbor = this.board.getPiece(coord.x, coord.y);
-
-    if (!neighbor) {
-      return;
-    }
-
-    neighbor.setType(type);
+    const neighbor = this.getNeighbor(key);
+    return neighbor && neighbor.setType(type);
   }
 
   setNeighbors(neighbors, type) {
-    neighbors.map(neighbor => {
-      this.setNeighbor(neighbor, type);
-    });
+    neighbors.map(neighbor => this.setNeighbor(neighbor, type));
   }
 
   surroundPiece() {
