@@ -6,8 +6,11 @@ const {
   ALL_BUT_BOTTOM,
   ALL_BUT_LEFT,
   DIAGONAL_NEIGHBORS,
+  BLOCK_TYPE,
+  BLOCK_TYPES,
+  EMPTY_TYPE,
   WATER_TYPE,
-  BLOCK_TYPE
+  WATER_TYPES
 } = require('./constants');
 
 class Piece {
@@ -19,31 +22,20 @@ class Piece {
   }
 
   isBlockType() {
-    return [
-      '<', // initial left end piece
-      '>', // initial right end piece
-      'v', // initial bottom end piece
-      '^', // initial top end piece
-      '#', // user-made block
-      'o', // initial circle
-      '%' // initial block
-     ].indexOf(this.type) >= 0;
+    return BLOCK_TYPES.indexOf(this.type) >= 0;
   }
 
   isWaterType() {
-    return [
-      '~', // user-made water
-      '=' // initial water
-    ].indexOf(this.type) >= 0;
+    return WATER_TYPES.indexOf(this.type) >= 0;
   }
 
   isEmpty() {
-    return this.type === ' ';
+    return this.type === EMPTY_TYPE;
   }
 
   setType(type) {
-    if (type === '~') this.setToWater();
-    if (type === '#') this.setToBlock();
+    if (type === WATER_TYPE) this.setToWater();
+    if (type === BLOCK_TYPE) this.setToBlock();
   }
 
   rollbackType(type) {
@@ -57,7 +49,7 @@ class Piece {
     }
   }
 
-  setToBlock(type = '#') {
+  setToBlock() {
     this.lastType = this.type;
     if (!this.isBlockType()) {
       this.type = BLOCK_TYPE;
