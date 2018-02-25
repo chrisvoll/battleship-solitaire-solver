@@ -12,6 +12,11 @@ class Board {
     this.log('Initial Board');
   }
 
+  /**
+   * The process of finding a solution is an infinite loop until there are no
+   * more possible moves. It flips back and forth between filling in complete
+   * rows and columns, and trying to place available ships on the board.
+   */
   solve() {
     if (this.fillRows()) return this.solve();
     if (this.fillShips()) return this.solve();
@@ -20,6 +25,12 @@ class Board {
     return valid;
   }
 
+  /**
+   * This method checks that a given board state is valid, meaning no rows
+   * contain more ship pieces than possible. However, it doesn't check for
+   * board completion, since its purpose is validate moves so we can roll back
+   * to a previous state if necessary.
+   */
   isSolutionValid() {
     let valid = true;
     const validate = (axis, getPieces) => axis.forEach((count, coord) => {
@@ -41,6 +52,10 @@ class Board {
       .filter(s => s.isComplete);
   }
 
+  /**
+   * If a row has the correct number of block pieces or water pieces, fill in
+   * the rest of the row with the necessary block or water pieces.
+   */
   fillRows() {
     let updated = false;
     const fill = (axis, getPieces) => axis.forEach((count, coord) => {
@@ -68,13 +83,24 @@ class Board {
     }
   }
 
+  /**
+   * We know how many ships of each size there are, so we can try to distribute
+   * all of the incomplete ones throughout the board. For example, if there's
+   * still a 5-boat available, we can check all the locations on the board that
+   * have exactly five spaces, and then test if adding the boat there will
+   * violate the max number of blocks for each affected row and column.
+   */
   fillShips() {
     let updated = false;
     const ships = [...this.shipLengths];
+
+    // Filter out all the ships we know are complete (i.e., surrounded by water)
     this.getCompleteShips().forEach(shipSequence => {
       ships.splice(ships.indexOf(shipSequence.length), 1);
     });
 
+    // For each available ship, find all the candidate locations on the board
+    // and drop it in. If it doesn't work, roll back and move on to the next one
     [...ships].forEach(ship => {
       const sequences = this.findSequences(
         piece => piece.isBlockType() || piece.isEmpty(),
@@ -100,6 +126,11 @@ class Board {
     return updated;
   }
 
+  /**
+   * This is a generalized method for finding groups of pieces. The first
+   * condition determines whether something belongs in a group, and the second
+   * condition determines if the group itself is valid.
+   */
   findSequences(condition, sequenceCondition = x => x) {
     const runSequence = (axis, getPieces) => {
       axis.forEach((count, coord) => {

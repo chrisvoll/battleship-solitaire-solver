@@ -1,6 +1,9 @@
 const { ALL_NEIGHBORS, WATER_TYPE } = require('./constants');
 
-// Sequence of block pieces
+/**
+ * A ship is a group of block pieces. It is complete when it is completely
+ * surrounded by water pieces (or the edge of the game board)
+ */
 class Ship {
   constructor(pieces) {
     this.pieces = pieces;

@@ -88,6 +88,11 @@ class Piece {
     neighbors.map(neighbor => this.setNeighbor(neighbor, type));
   }
 
+  /**
+   * All block pieces have special properties that affect surrounding pieces.
+   * For example, because ships cannot touch (even diagonally), blocks are
+   * always surrounded diagonally by water.
+   */
   surroundPiece() {
     switch(this.type) {
       case '%':
