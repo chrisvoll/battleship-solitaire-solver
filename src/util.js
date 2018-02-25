@@ -1,6 +1,6 @@
 const neighborMapper = (key, x, y) => {
-	const diff = ({
-  	't': [0, -1],
+  const diff = ({
+    't': [0, -1],
     'r': [1, 0],
     'b': [0, 1],
     'l': [-1, 0],
