@@ -42,10 +42,6 @@ class Board {
     ).map(sequence => new Ship(sequence)).filter(s => s.isComplete);
   }
 
-  surroundPieces() {
-    this.board.forEach(row => row.forEach(piece => piece.surroundPiece()));
-  }
-
   fillRows() {
     let updated = false;
     const fill = (axis, getPieces) => axis.forEach((count, coord) => {
@@ -55,7 +51,7 @@ class Board {
     });
     fill(this.rows, this.getRow);
     fill(this.columns, this.getColumn);
-    this.surroundPieces();
+    this.board.forEach(row => row.forEach(piece => piece.surroundPiece()));
     return updated;
   }
 
@@ -64,50 +60,49 @@ class Board {
     const empties = pieces.filter(p => p.isEmpty());
     const filled = pieces.filter(p => p.isBlockType());
 
-    if (blockable.length === count && empties.length > 0) {
-      empties.forEach(piece => { piece.setToBlock(); });
+    if (blockable.length === count && empties.length) {
+      empties.forEach(piece => piece.setToBlock());
       return true;
     }
 
-    if (filled.length === count && empties.length > 0) {
-      empties.forEach(piece => { piece.setToWater(); });
+    if (filled.length === count && empties.length) {
+      empties.forEach(piece => piece.setToWater());
       return true;
     }
-
-    return false;
   }
 
   fillShips() {
-    const lengths = [...this.shipLengths];
-    this.getCompleteShips().forEach(ship => {
-      lengths.splice(lengths.indexOf(ship.length), 1);
+    let updated = false;
+    const ships = [...this.shipLengths];
+    this.getCompleteShips().forEach(shipSequence => {
+      ships.splice(ships.indexOf(shipSequence.length), 1);
     });
 
-    let filled = [];
-    lengths.forEach(length => {
+    [...ships].forEach(ship => {
       const sequences = this.findSequences(
         piece => piece.isBlockType() || piece.isEmpty(),
         sequence => (
-          sequence.sequence.length === length &&
+          sequence.sequence.length === ship &&
           sequence.sequence.filter(piece => piece.isEmpty()).length &&
           (sequence.type === 'column' ?
-            this.columns[sequence.column] >= length :
-            this.rows[sequence.row] >= length)
+            this.columns[sequence.column] >= ship :
+            this.rows[sequence.row] >= ship)
         )
       );
 
       for (let i = 0; i < sequences.length; i++) {
         sequences[i].forEach(piece => piece.setToBlock());
         if (this.isSolutionValid()) {
-          filled.push(length);
+          ships.splice(ships.indexOf(ship), 1);
+          updated = true;
+          break;
         } else {
           sequences[i].forEach(piece => piece.rollbackType());
         }
       }
     });
-    filled.forEach(length => lengths.splice(lengths.indexOf(length), 1));
 
-    return filled.length > 0;
+    return updated;
   }
 
   findSequences(condition, sequenceCondition) {
