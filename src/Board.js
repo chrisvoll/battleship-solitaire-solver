@@ -20,9 +20,7 @@ class Board {
   solve() {
     if (this.fillRows()) return this.solve();
     if (this.fillShips()) return this.solve();
-    const valid = this.isSolutionValid();
-    this.log(valid ? 'Done!' : 'Failed :(', valid);
-    return valid;
+    this.log('Done!', this.isSolutionValid());
   }
 
   /**
