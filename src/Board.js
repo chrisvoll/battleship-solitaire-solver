@@ -109,14 +109,14 @@ class Board {
         )
       );
 
-      for (let i = 0; i < sequences.length; i++) {
-        sequences[i].forEach(piece => piece.setToBlock());
+      for (let pieces of sequences) {
+        pieces.forEach(piece => piece.setToBlock());
         if (this.isSolutionValid()) {
           ships.splice(ships.indexOf(ship), 1);
           updated = true;
           break;
         } else {
-          sequences[i].forEach(piece => piece.rollbackType());
+          pieces.forEach(piece => piece.rollbackType());
         }
       }
     });
