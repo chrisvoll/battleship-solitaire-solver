@@ -84,9 +84,7 @@ class Board {
         sequence => (
           sequence.sequence.length === ship &&
           sequence.sequence.filter(piece => piece.isEmpty()).length &&
-          (sequence.type === 'column' ?
-            this.columns[sequence.column] >= ship :
-            this.rows[sequence.row] >= ship)
+          sequence.axis[sequence.coord] >= ship
         )
       );
 
@@ -106,7 +104,7 @@ class Board {
   }
 
   findSequences(condition, sequenceCondition) {
-    const runSequence = (type, axis, getPieces) => {
+    const runSequence = (axis, getPieces) => {
       axis.forEach((count, coord) => {
         let sequence = [];
         const pieces = getPieces.call(this, coord);
@@ -115,7 +113,7 @@ class Board {
           if (pieces[i] && condition(pieces[i])) {
             sequence.push(pieces[i]);
           } else {
-            if (sequenceCondition({ sequence, type, [type]: coord })) {
+            if (sequenceCondition({ sequence, axis, coord })) {
               sequences.push(sequence);
               break;
             }
@@ -126,8 +124,8 @@ class Board {
     };
 
     let sequences = [];
-    runSequence('column', this.columns, this.getColumn);
-    runSequence('row', this.rows, this.getRow);
+    runSequence(this.columns, this.getColumn);
+    runSequence(this.rows, this.getRow);
     return sequences;
   }
 
