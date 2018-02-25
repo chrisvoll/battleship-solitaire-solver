@@ -135,7 +135,7 @@ class Board {
         let sequence = [];
         const pieces = getPieces.call(this, coord);
 
-        for (let i = 0; i < pieces.length + 1; i++) {
+        for (let i = 0; i < pieces.length + 1; i++) { // +1 includes the edge
           if (pieces[i] && condition(pieces[i])) {
             sequence.push(pieces[i]);
           } else {
