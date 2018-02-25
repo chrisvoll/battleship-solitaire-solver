@@ -36,10 +36,9 @@ class Board {
   getColumn(column) { return this.board.map(row => row[column]); }
   getPiece(x, y) { return (this.board[y] || [])[x]; }
   getCompleteShips() {
-    return this.findSequences(
-      piece => piece.isBlockType(),
-      sequence => sequence.sequence.length > 1
-    ).map(sequence => new Ship(sequence)).filter(s => s.isComplete);
+    return this.findSequences(piece => piece.isBlockType())
+      .map(sequence => new Ship(sequence))
+      .filter(s => s.isComplete);
   }
 
   fillRows() {
@@ -63,9 +62,7 @@ class Board {
     if (blockable.length === count && empties.length) {
       empties.forEach(piece => piece.setToBlock());
       return true;
-    }
-
-    if (filled.length === count && empties.length) {
+    } else if (filled.length === count && empties.length) {
       empties.forEach(piece => piece.setToWater());
       return true;
     }
@@ -103,7 +100,7 @@ class Board {
     return updated;
   }
 
-  findSequences(condition, sequenceCondition) {
+  findSequences(condition, sequenceCondition = x => x) {
     const runSequence = (axis, getPieces) => {
       axis.forEach((count, coord) => {
         let sequence = [];
